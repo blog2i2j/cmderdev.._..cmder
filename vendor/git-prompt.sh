@@ -5,9 +5,9 @@ function getGitStatusSetting() {
   # Get all git config entries for the current repository without pager
   gitConfig=$(git --no-pager config -l 2>/dev/null) || return 0  # treat failure as enabled
 
-  # Check if git status for Cmder is disabled
-  if [[ $gitConfig =~ (^|$'\n')cmder\.status=false($|$'\n') ]] || \
-     [[ $gitConfig =~ (^|$'\n')cmder\.shstatus=false($|$'\n') ]]
+  # Check if git status display for Cmder is disabled via config
+  # Matches: cmder.status=false or cmder.shstatus=false (Bash-specific)
+  if [[ $gitConfig =~ (^|$'\n')cmder\.(sh)?status=false($|$'\n') ]]
   then
     return 1  # disabled
   fi
@@ -47,7 +47,7 @@ then
     . ~/.config/git/git-prompt.sh
   fi
 else
-  # Taken parts from https://github.com/git-for-windows/build-extra/blob/main/git-extra/git-prompt.sh
+  # Source: github.com/git-for-windows/build-extra/blob/main/git-extra/git-prompt.sh
   PS1='\[\033]0;${TITLEPREFIX:+$TITLEPREFIX:}${PWD//[^[:ascii:]]/?}\007\]' # set window title to TITLEPREFIX (if set) and current working directory
   # PS1="$PS1"'\n'               # new line (disabled)
   PS1="$PS1"'\[\033[32m\]'       # change to green and bold
@@ -70,7 +70,7 @@ else
         PS1="$PS1"'\[\033[36m\]'  # change color to cyan
         PS1="$PS1"'`__git_ps1`'   # bash function
       else
-        PS1="$PS1"'\[\033[37;1m\]'  # change color to white
+        PS1="$PS1"'\[\033[37;1m\]' # change color to white
         PS1="$PS1"'`getSimpleGitBranch`'
       fi
     fi
@@ -82,7 +82,7 @@ else
   PS1="$PS1"'\[\033[0m\]'        # reset color
 fi
 
-MSYS2_PS1="$PS1"               # for detection by MSYS2 SDK's bash.basrc
+MSYS2_PS1="$PS1"                 # for detection by MSYS2 SDK's bash.basrc
 
 # Evaluate all user-specific Bash completion scripts (if any)
 if test -z "$WINELOADERNOEXEC"
